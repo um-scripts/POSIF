@@ -1,0 +1,5 @@
+pandas
+redis
+celery
+Flask
+scikit-learn
