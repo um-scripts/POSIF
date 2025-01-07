@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>POSIF</title>
+        
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" 
+            rel="stylesheet" 
+            integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" 
+            crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" 
+            integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+            crossorigin="anonymous">
+        </script>
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.7.13/dist/vue.js"></script>
+        <style>
+            @keyframes blink {
+                0%{ opacity: 1; }
+                50%{ opacity: 0; }
+                100%{ opacity: 1; }
+            }
+
+            @keyframes animate {
+                0%{ transform: rotateY(0deg); }
+                100%{ transform: rotateY(360deg); }
+            }
+
+            @keyframes fadeIn {
+                0% { opacity: 0; }
+                100% { opacity: 1; }
+            }
+
+            @keyframes fadeOut {
+                0% { opacity: 1 }
+                100% { opacity: 0 }
+            }
+        </style>
+    </head>
+    <body style="background-image: url('../static/background_.png'); background-repeat: no-repeat; background-size: cover; background-attachment: fixed; background-position: center center;">
+
+        <div id="overlay" class="h-100 w-100 fixed-top d-flex flex-column justify-content-center" style="z-index: 100;">
+            <div class="h-100 w-100 fixed-top d-flex flex-column justify-content-center" style="z-index: 1;
+            background-image: linear-gradient(white, white, white, lightgray, gray, black); opacity: 80%;"></div>
+            <div class="d-flex flex-row justify-content-center" style="z-index: 2;">
+                <img class="load_anim" src="../static/load_icon_.png" style="height: 100px; width: auto; animation: animate 3s linear infinite;">
+                <span style="align-self: center; padding-left: 25px; max-width: 50%;" id="status"><h1>Loading</h1></span>
+                <div class="d-flex align-items-center">
+                    <h1 class="load_anim" style="height: fit-content; animation: blink 2s linear infinite;"> .</h1>
+                    <h1 class="load_anim" style="height: fit-content; animation: blink 2s linear 0.5s infinite;"> .</h1>
+                    <h1 class="load_anim" style="height: fit-content; animation: blink 2s linear 1s infinite;"> .</h1>
+                </div>
+            </div>
+        </div> 
+
+        <div id="guide" class="h-100 w-100 fixed-top d-flex flex-column justify-content-center" style="z-index: 0; opacity: 0;">
+            <div class="h-100 w-100 fixed-top d-flex flex-column justify-content-center" style="z-index: 1;background-color: white; opacity: 60%;"></div>
+            <div class="d-flex flex-row justify-content-center" style="max-height: 90%; z-index: 2;">
+                <div class="d-flex flex-column border border-5 border-dark rounded" style="padding: 1%; width: 85%; background-color: white; opacity: 100%;">
+                    <div class="d-flex flex-column border border-1 border-dark rounded" style="max-height: 90%; overflow-y: scroll; background-color: lightblue; padding: 1%;">
+                        <div>
+                            <h6>POSIF is a tool to identify small RNAs (sRNAs) in bacterial genomes using sRNA-seq data. 
+                                The tool uses isolation forest machine learning for the read counts (per-base coverage file(s) as input) obtained from sRNA sequencing data and predicts putative sRNA encoding regions in the genome. 
+                                The output of POSIF contains the genomic location of the predicted sRNAs.
+                            </h6>
+                            <hr/>
+                            <h6>List of Organisms supported by POSIF</h6>
+                            <p>
+                                &#8226;	<i>Escherichia coli</i> K-12<br>
+                                &#8226;	<i>Salmonella enterica serovar Typhimurium</i> LT2<br>
+                                &#8226;	<i>Pseudomonas aeruginosa</i> PAO1<br>
+                                &#8226;	<i>Staphylococcus aureus</i> NCTC 8325<br>
+                                &#8226;	<i>Bacillus subtilis</i> 168<br>
+                                &#8226;	<i>Vibrio cholerae</i> RFB16<br>
+                                &#8226;	<i>Listeria monocytogenes</i> EGD-e<br>
+                                &#8226;	<i>Clostridium difficile</i> S-0253<br>
+                                &#8226;	<i>Mycobacterium tuberculosis</i> H37Rv<br>
+                                &#8226;	<i>Streptococcus pneumoniae</i> Hu17<br>
+                            </p>
+                        </div>
+                        <div>
+                            <h5>Instructions</h5>
+                            <p>
+                                1.	Organism: Select the organism of your interest from the dropdown list <br>
+                                2.	Select data type: The tool takes per base coverage file as input (Strand-Specific | Non-Strand-Specific).<br>
+                            </p>
+                            <div style="margin-left: 30px;">
+                                <p>
+                                    <h6>Procedure to create per base coverage file:</h6>
+                                    a.	BAM file converted into a sorted BAM file.<br>
+                                    <code>Command: samtools sort &lt;bam file&gt; -o &lt;output sorted bam file&gt;</code><br>
+                                    b.	Strand-specific sRNA-seq data requires splitting the BAM file into forward and reverse files. Non-strand-specific RNA-seq data uses a single BAM file.<br>
+                                    c.	BAM files need to be converted into BED files using the BEDtools command. <br>
+                                    <code>Command: bedtools genomcov -ibam &lt;bam file&gt; -d &lt;output bed file&gt;</code><br>
+                                    d.	The per base (.bed) file consists of three columns: Chromosome, Position, and Read Count. This file format serves as the input for POSIF. In the case of strand-specific data, two separate input files are required: Forward.bed and Reverse.bed. However, for non-strand-specific data, a single .bed file is used as the input for POSIF.<br>    
+                                </p>
+                            </div>
+                            <p>
+                                3.	Contamination: The amount of contamination of the data set, i.e., the proportion of outliers in the data set. Used when fitting to define a threshold on the scores of the samples. The contamination should be in the range (0, 0.5), endpoints excluded.<br>
+                                4.	Output File Name: Provide the output file name.
+                            </p>
+                        </div>
+                        <div> 
+                            <h5>Example run</h5>
+                            <p>
+                                &ndash;	Select the organism from the dropdown option of <b>Select an Organism</b>.<br>
+                                &ndash;	For strand specific data, select the <b>Strand Specific</b> option on the tool, and upload both Forward Strand Per Base File and Reverse Strand Per Base File. (Download sample input <a href="/example" target="_blank">here</a>)<br>
+                                &ndash;	For non-strand specific data, select the <b>Non-strand Specific</b> option on the tool and upload the Per base file as input.<br>
+                                &ndash;	Set the contamination factor as <b>0.005</b>.<br>
+                                &ndash;	Enter the output file name and submit the form.<br>
+                            </p>
+                            <hr/>
+                            <h5>Contact Information</h5>
+                            <span>For any inquiries related to POSIF, please write to  Dr. Shubhada Hegde (shubhada@ibab.ac.in),
+                                or Ms. Upasana Maity (upasana.megha1999@gmail.com). </span> 
+                            <hr/>
+                            <h5>Cite POSIF</h5>
+                            <span>If you use POSIF, kindly acknowledge it by citing the following source.</span>
+                            <br>
+                        </div>
+                    </div>
+                    <hr/>
+                    <div class="d-flex flex-row justify-content-center">
+                        <button class="btn btn-primary" onclick="hide_guide()">Return to Page</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================================================================================ -->
+        
+        
+        <div id="input_form" class="h-100 w-100 fixed-top" style="z-index: 1; overflow-y: scroll;">
+            <div class="container-sm justify-content-md-end" style="width: 75%; margin-top: 2%; padding: 0;">
+                <div class="d-flex flex-row justify-content-end" style="padding-right: 4px; padding-bottom: 4px;">
+                    <button class="btn btn-light border-dark border border-1" onclick="show_guide()">User's Guide</button>
+                </div>
+            </div>
+
+            <h1 class="display-4 text-center border border-primary border-3 rounded" 
+            style="margin: auto; margin-bottom: 1%; padding: 2%; background-color: white; 
+            font-weight: bold; width: 75%;">
+                    POSIF - Bacterial sRNA Detection Tool
+            </h1>
+            
+            <form class="container-sm border border-5 rounded justify-content-center border-dark needs-validation" 
+            enctype="multipart/form-data" style="padding: 2%; width: 75%; background-color: white; opacity: 90%; padding-bottom: 0;" id="form" novalidate>
+                <div class="d-flex flex-wrap flex-row justify-content-evenly" style="max-width: 90%; margin: auto;">
+                    <div class="form-group d-flex flex-column justify-content-center" style="padding: 10px; width: 42%; min-width: 280px;">
+                        <label for="org_select" class="form-label">Organism</label>
+                        <div class="input-group has-validation">
+                            <span class="input-group-text" id="org_select_label">ORG</span>
+                            <textarea class="form-control" id="org_select" aria-describedby="so_help" required disabled :value="selected_organism" style="max-height: 40px; resize: none;"></textarea>
+                            <div class="invalid-feedback">
+                                Please select an organism of your choice
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex flex-column justify-content-center">
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                            Select an Organism
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <a class="dropdown-item" v-for="org in organisms" href="#" v-on:click="select_organism(org)">
+                                        <i>{{ org.name }}</i> {{ org.id }}
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <br>
+                    <hr style="height:3px;border-width:0;color:black;background-color:black; width: 90%; margin: auto;">
+                    <br>
+                </div>
+
+                <div class="d-flex flex-wrap flex-row justify-content-evenly form-group" style="max-width: 90%; margin: auto;">
+                    <div class="d-flex flex-column justify-content-center" style="padding: 25px;">
+                        <label class="form-label">sRNA seq data</label>
+                        <div class="btn-group" role="group" aria-label="radio toggle button group">
+                            <input type="radio" class="btn-check" name="btnGroupRadio" id="btnRadio1" autocomplete="off" checked="true" v-on:click="select_strand('non_strand_spec')">
+                            <label class="btn btn-outline-primary" for="btnRadio1">Non-Strand Specific</label>
+                          
+                            <input type="radio" class="btn-check" name="btnGroupRadio" id="btnRadio2" autocomplete="off" v-on:click="select_strand('strand_spec')">
+                            <label class="btn btn-outline-primary" for="btnRadio2">Strand Specific</label>
+                        </div>
+                    </div>
+                    <div v-show="strand_type == 'strand_spec'">
+                        <div class="mb-3 has-validation">
+                            <label for="fwd_perbase_file" class="form-label">Forward Strand Perbase File</label>
+                            <input class="form-control" type="file" id="fwd_perbase_file" aria-describedby="fp_help" required v-on:change="validate_file_selection('fwd_perbase_file')">
+                            <div class="invalid-feedback">
+                                Please select a bed file
+                            </div>
+                            <small id="fp_help" class="form-text text-muted">Select .bed file only</small>
+                        </div>
+                        <div class="mb-3 has-validation">
+                            <label for="rev_perbase_file" class="form-label">Reverse Strand Perbase File</label>
+                            <input class="form-control" type="file" id="rev_perbase_file" aria-describedby="rp_help" required v-on:change="validate_file_selection('rev_perbase_file')">
+                            <div class="invalid-feedback">
+                                Please select a bed file
+                            </div>
+                            <small id="rp_help" class="form-text text-muted">Select .bed file only</small>
+                        </div>
+                    </div>
+                    <div v-show="strand_type == 'non_strand_spec'">
+                        <div class="mb-3 has-validation">
+                            <label for="perbase_file" class="form-label">Perbase File</label>
+                            <input class="form-control" type="file" id="perbase_file" aria-describedby="p_help" required v-on:change="validate_file_selection('perbase_file')">
+                            <div class="invalid-feedback">
+                                Please select a bed file
+                            </div>
+                            <small id="p_help" class="form-text text-muted">Select .bed file only</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <br>
+                    <hr style="height:3px;border-width:0;color:black;background-color:black; width: 90%; margin: auto;">
+                    <br>
+                </div>
+                
+                <div class="d-flex flex-wrap flex-row justify-content-evenly form-group" style="max-width: 90%; margin: auto;">
+                    <div style="width: 30%; margin: auto; min-width: 280px;">
+                        <label for="c_factor" class="form-label">Contamination Factor</label>
+                        <div class="input-group has-validation">
+                            <span class="input-group-text" id="c_factor_label">CF</span>
+                            <input type="number" min="0.001" max="0.490" step="0.001" class="form-control" id="c_factor" aria-describedby="cf_help" placeholder="Enter Contamination Factor" required v-model="cf_value">
+                            <div class="invalid-feedback">
+                                Please enter a valid Contamination Factor
+                            </div>
+                        </div>
+                        <small id="cf_help" class="form-text text-muted">Percentage of total dataset to be detected as outlier. 
+                        Must be in the range (0, 0.5)</small>
+                    </div>
+
+                    <div style="width: 30%; margin: auto; min-width: 280px;">
+                        <label for="out_name" class="form-label">Output File Name</label>
+                        <div class="input-group has-validation">
+                            <span class="input-group-text" id="out_name_label">Name</span>
+                            <input type="text" class="form-control" id="out_name" pattern="^[_A-Za-z0-9]+$" placeholder="Enter output file name" aria-describedby="name_help" required v-model="out_name">
+                            <div class="invalid-feedback">
+                                Please enter a valid Name
+                            </div>
+                        </div>
+                        <small id="name_help" class="form-text text-muted">
+                            The final output file will be named as provided. 
+                            Allowed characters: A-Z a-z _ 0-9
+                        </small>
+                    </div>
+                </div>
+                
+                
+                
+                <div>
+                    <br>
+                    <hr style="height:3px;border-width:0;color:black;background-color:black; width: 90%; margin: auto;">
+                    <br>
+                </div>
+
+                <div class="d-flex flex-row justify-content-center" style="margin-bottom: 30px;">
+                    <button class="btn btn-primary" type="submit" v-on:click="submit">Submit form</button>
+                </div>
+
+                <div class="d-flex flex-row w-100 justify-content-center">
+                    <span class="h6" style="text-align: center;">
+                        &copy; 2023 Institute of Bioinformatics and Applied Biotechnology, Bengaluru, India.<br>All Rights Reserved.
+                    </span>
+                </div>
+            </form>
+	    <br>
+        </div>
+    </body>
+    <script src="../static/index.js"></script>
+</html>
