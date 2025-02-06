@@ -1,0 +1,5 @@
+D <- read.csv('ControlRNaseECDS_p_value.csv')
+D$adjusted_p <- p.adjust(D$p.value, method = "bonferroni")
+D$significance <- ifelse(D$adjusted_p < 0.05, "significant", "not_significant")
+
+write.csv(D, file = "output.csv", row.names = FALSE)
