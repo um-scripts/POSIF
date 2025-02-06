@@ -1,1 +1,5 @@
 # POSIF
+
+Abstract
+
+Small non-coding RNAs (sRNAs) regulate the synthesis of virulence factors and other pathogenic traits, which enables the bacteria to survive and proliferate after host infection. While high-throughput sequencing data have proved useful in identifying sRNAs from the intergenic regions (IGRs) of the genome, it remains a challenge to present a complete genome-wide map of the expression of the sRNAs. Moreover, existing methodologies necessitate multiple dependencies for executing their algorithm and also lack a targeted approach for the de novo sRNA identification. We developed an Isolation Forest algorithm-based method and the tool Prediction Of sRNAs using Isolation Forest for the de novo identification of sRNAs from available bacterial sRNA-seq data (http://posif.ibab.ac.in/). Using this framework, we predicted 1120 sRNAs and 46 small proteins in Mycobacterium tuberculosis. Besides, we highlight the context-dependent expression of novel sRNAs, their probable synthesis, and their potential relevance in stress response mechanisms manifested by M. tuberculosis.
